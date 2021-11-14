@@ -1,5 +1,6 @@
 /**
  *Borrowed from USDT's contract
+ *Max De Jesus - 2021
 */
 
 pragma solidity ^0.4.17;
