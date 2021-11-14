@@ -1,7 +1,9 @@
 /**
- *By - Max De Jesus - NJ
- Boilerplate borrowed from USDC (DOPX__)
+ *Borrowed from Tether USDT contract
+ *DOPX - Max De Jesus
 */
+
+// File: @openzeppelin/contracts/math/SafeMath.sol
 
 // SPDX-License-Identifier: MIT
 
@@ -266,7 +268,7 @@ interface IERC20 {
     );
 }
 
-// File: contracts/v1/AbstractDOPX.sol
+// File: contracts/v1/AbstractFiatTokenV1.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -292,7 +294,7 @@ interface IERC20 {
 
 pragma solidity 0.6.12;
 
-abstract contract AbstractDOPX is IERC20 {
+abstract contract AbstractFiatTokenV1 is IERC20 {
     function _approve(
         address owner,
         address spender,
@@ -586,7 +588,7 @@ contract Blacklistable is Ownable {
     }
 }
 
-// File: contracts/v1/DOPX1.sol
+// File: contracts/v1/FiatTokenV1.sol
 
 /**
  *
@@ -614,10 +616,10 @@ contract Blacklistable is Ownable {
 pragma solidity 0.6.12;
 
 /**
- * @title DOPX
+ * @title FiatToken
  * @dev ERC20 Token backed by fiat reserves
  */
-contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
+contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
     using SafeMath for uint256;
 
     string public name;
@@ -649,22 +651,22 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
         address newBlacklister,
         address newOwner
     ) public {
-        require(!initialized, "DOPX: contract is already initialized");
+        require(!initialized, "FiatToken: contract is already initialized");
         require(
             newMasterMinter != address(0),
-            "DOPX: new masterMinter is the zero address"
+            "FiatToken: new masterMinter is the zero address"
         );
         require(
             newPauser != address(0),
-            "DOPX: new pauser is the zero address"
+            "FiatToken: new pauser is the zero address"
         );
         require(
             newBlacklister != address(0),
-            "DOPX: new blacklister is the zero address"
+            "FiatToken: new blacklister is the zero address"
         );
         require(
             newOwner != address(0),
-            "DOPX: new owner is the zero address"
+            "FiatToken: new owner is the zero address"
         );
 
         name = tokenName;
@@ -682,7 +684,7 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
      * @dev Throws if called by any account other than a minter
      */
     modifier onlyMinters() {
-        require(minters[msg.sender], "DOPX: caller is not a minter");
+        require(minters[msg.sender], "FiatToken: caller is not a minter");
         _;
     }
 
@@ -701,13 +703,13 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
         notBlacklisted(_to)
         returns (bool)
     {
-        require(_to != address(0), "DOPX: mint to the zero address");
-        require(_amount > 0, "DOPX: mint amount not greater than 0");
+        require(_to != address(0), "FiatToken: mint to the zero address");
+        require(_amount > 0, "FiatToken: mint amount not greater than 0");
 
         uint256 mintingAllowedAmount = minterAllowed[msg.sender];
         require(
             _amount <= mintingAllowedAmount,
-            "DOPX: mint amount exceeds minterAllowance"
+            "FiatToken: mint amount exceeds minterAllowance"
         );
 
         totalSupply_ = totalSupply_.add(_amount);
@@ -724,7 +726,7 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
     modifier onlyMasterMinter() {
         require(
             msg.sender == masterMinter,
-            "DOPX: caller is not the masterMinter"
+            "FiatToken: caller is not the masterMinter"
         );
         _;
     }
@@ -934,8 +936,8 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
         notBlacklisted(msg.sender)
     {
         uint256 balance = balances[msg.sender];
-        require(_amount > 0, "DOPX: burn amount not greater than 0");
-        require(balance >= _amount, "DOPX: burn amount exceeds balance");
+        require(_amount > 0, "FiatToken: burn amount not greater than 0");
+        require(balance >= _amount, "FiatToken: burn amount exceeds balance");
 
         totalSupply_ = totalSupply_.sub(_amount);
         balances[msg.sender] = balance.sub(_amount);
@@ -946,7 +948,7 @@ contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
     function updateMasterMinter(address _newMasterMinter) external onlyOwner {
         require(
             _newMasterMinter != address(0),
-            "DOPX: new masterMinter is the zero address"
+            "FiatToken: new masterMinter is the zero address"
         );
         masterMinter = _newMasterMinter;
         emit MasterMinterChanged(masterMinter);
@@ -1343,7 +1345,7 @@ contract Rescuable is Ownable {
     }
 }
 
-// File: contracts/v1.1/DOPX.sol
+// File: contracts/v1.1/FiatTokenV1_1.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -1370,10 +1372,10 @@ contract Rescuable is Ownable {
 pragma solidity 0.6.12;
 
 /**
- * @title DOPX
+ * @title FiatTokenV1_1
  * @dev ERC20 Token backed by fiat reserves
  */
-contract DOPX is DOPX1, Rescuable {
+contract FiatTokenV1_1 is FiatTokenV1, Rescuable {
 
 }
 
@@ -1403,7 +1405,7 @@ contract DOPX is DOPX1, Rescuable {
 
 pragma solidity 0.6.12;
 
-abstract contract AbstractFiatTokenV2 is AbstractDOPX {
+abstract contract AbstractFiatTokenV2 is AbstractFiatTokenV1 {
     function _increaseAllowance(
         address owner,
         address spender,
@@ -1723,7 +1725,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == from,
-            "DOPX_: invalid signature"
+            "FiatTokenV2: invalid signature"
         );
 
         _markAuthorizationAsUsed(from, nonce);
@@ -1755,7 +1757,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(to == msg.sender, "DOPX_: caller must be the payee");
+        require(to == msg.sender, "FiatTokenV2: caller must be the payee");
         _requireValidAuthorization(from, nonce, validAfter, validBefore);
 
         bytes memory data = abi.encode(
@@ -1769,7 +1771,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == from,
-            "DOPX_: invalid signature"
+            "FiatTokenV2: invalid signature"
         );
 
         _markAuthorizationAsUsed(from, nonce);
@@ -1800,7 +1802,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == authorizer,
-            "DOPX_: invalid signature"
+            "FiatTokenV2: invalid signature"
         );
 
         _authorizationStates[authorizer][nonce] = true;
@@ -1818,7 +1820,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
     {
         require(
             !_authorizationStates[authorizer][nonce],
-            "DOPX_: authorization is used or canceled"
+            "FiatTokenV2: authorization is used or canceled"
         );
     }
 
@@ -1837,9 +1839,9 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
     ) private view {
         require(
             now > validAfter,
-            "DOPX_: authorization is not yet valid"
+            "FiatTokenV2: authorization is not yet valid"
         );
-        require(now < validBefore, "DOPX_: authorization is expired");
+        require(now < validBefore, "FiatTokenV2: authorization is expired");
         _requireUnusedAuthorization(authorizer, nonce);
     }
 
@@ -1921,7 +1923,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(deadline >= now, "DOPX_: permit is expired");
+        require(deadline >= now, "FiatTokenV2: permit is expired");
 
         bytes memory data = abi.encode(
             PERMIT_TYPEHASH,
@@ -1940,7 +1942,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
     }
 }
 
-// File: contracts/v2/DOPX_.sol
+// File: contracts/v2/FiatTokenV2.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -1967,10 +1969,10 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
 pragma solidity 0.6.12;
 
 /**
- * @title DOPX
+ * @title FiatToken V2
  * @notice ERC20 Token backed by fiat reserves, version 2
  */
-contract DOPX_ is DOPX, EIP3009, EIP2612 {
+contract FiatTokenV2 is FiatTokenV1_1, EIP3009, EIP2612 {
     uint8 internal _initializedVersion;
 
     /**
@@ -2001,16 +2003,6 @@ contract DOPX_ is DOPX, EIP3009, EIP2612 {
         _increaseAllowance(msg.sender, spender, increment);
         return true;
     }
-
-    //Utilities
-
-    function totalBalance() 
-    view
-    public
-    returns(uint256)
-        {
-   return address(this).balance;
-        }
 
     /**
      * @notice Decrease the allowance by a given decrement
@@ -2180,7 +2172,7 @@ contract DOPX_ is DOPX, EIP3009, EIP2612 {
     }
 }
 
-// File: contracts/v2/DOPX__.sol
+// File: contracts/v2/FiatTokenV2_1.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -2212,7 +2204,7 @@ pragma solidity 0.6.12;
  * @title FiatToken V2.1
  * @notice ERC20 Token backed by fiat reserves, version 2.1
  */
-contract DOPX__ is DOPX_ {
+contract FiatTokenV2_1 is FiatTokenV2 {
     /**
      * @notice Initialize v2.1
      * @param lostAndFound  The address to which the locked funds are sent
