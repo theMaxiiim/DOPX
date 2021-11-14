@@ -1,6 +1,6 @@
 /**
  *By - Max De Jesus - NJ
- Boilerplate borrowed from USDC (FiatTokenV2_1)
+ Boilerplate borrowed from USDC (DOPX__)
 */
 
 // SPDX-License-Identifier: MIT
@@ -586,7 +586,7 @@ contract Blacklistable is Ownable {
     }
 }
 
-// File: contracts/v1/FiatTokenV1.sol
+// File: contracts/v1/DOPX1.sol
 
 /**
  *
@@ -617,7 +617,7 @@ pragma solidity 0.6.12;
  * @title DOPX
  * @dev ERC20 Token backed by fiat reserves
  */
-contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
+contract DOPX1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
     using SafeMath for uint256;
 
     string public name;
@@ -1343,7 +1343,7 @@ contract Rescuable is Ownable {
     }
 }
 
-// File: contracts/v1.1/FiatTokenV1_1.sol
+// File: contracts/v1.1/DOPX.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -1370,10 +1370,10 @@ contract Rescuable is Ownable {
 pragma solidity 0.6.12;
 
 /**
- * @title FiatTokenV1_1
+ * @title DOPX
  * @dev ERC20 Token backed by fiat reserves
  */
-contract FiatTokenV1_1 is FiatTokenV1, Rescuable {
+contract DOPX is DOPX1, Rescuable {
 
 }
 
@@ -1723,7 +1723,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == from,
-            "FiatTokenV2: invalid signature"
+            "DOPX_: invalid signature"
         );
 
         _markAuthorizationAsUsed(from, nonce);
@@ -1755,7 +1755,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(to == msg.sender, "FiatTokenV2: caller must be the payee");
+        require(to == msg.sender, "DOPX_: caller must be the payee");
         _requireValidAuthorization(from, nonce, validAfter, validBefore);
 
         bytes memory data = abi.encode(
@@ -1769,7 +1769,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == from,
-            "FiatTokenV2: invalid signature"
+            "DOPX_: invalid signature"
         );
 
         _markAuthorizationAsUsed(from, nonce);
@@ -1800,7 +1800,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
         );
         require(
             EIP712.recover(DOMAIN_SEPARATOR, v, r, s, data) == authorizer,
-            "FiatTokenV2: invalid signature"
+            "DOPX_: invalid signature"
         );
 
         _authorizationStates[authorizer][nonce] = true;
@@ -1818,7 +1818,7 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
     {
         require(
             !_authorizationStates[authorizer][nonce],
-            "FiatTokenV2: authorization is used or canceled"
+            "DOPX_: authorization is used or canceled"
         );
     }
 
@@ -1837,9 +1837,9 @@ abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
     ) private view {
         require(
             now > validAfter,
-            "FiatTokenV2: authorization is not yet valid"
+            "DOPX_: authorization is not yet valid"
         );
-        require(now < validBefore, "FiatTokenV2: authorization is expired");
+        require(now < validBefore, "DOPX_: authorization is expired");
         _requireUnusedAuthorization(authorizer, nonce);
     }
 
@@ -1921,7 +1921,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(deadline >= now, "FiatTokenV2: permit is expired");
+        require(deadline >= now, "DOPX_: permit is expired");
 
         bytes memory data = abi.encode(
             PERMIT_TYPEHASH,
@@ -1940,7 +1940,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
     }
 }
 
-// File: contracts/v2/FiatTokenV2.sol
+// File: contracts/v2/DOPX_.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -1970,7 +1970,7 @@ pragma solidity 0.6.12;
  * @title DOPX
  * @notice ERC20 Token backed by fiat reserves, version 2
  */
-contract FiatTokenV2 is FiatTokenV1_1, EIP3009, EIP2612 {
+contract DOPX_ is DOPX, EIP3009, EIP2612 {
     uint8 internal _initializedVersion;
 
     /**
@@ -2180,7 +2180,7 @@ contract FiatTokenV2 is FiatTokenV1_1, EIP3009, EIP2612 {
     }
 }
 
-// File: contracts/v2/FiatTokenV2_1.sol
+// File: contracts/v2/DOPX__.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -2212,7 +2212,7 @@ pragma solidity 0.6.12;
  * @title FiatToken V2.1
  * @notice ERC20 Token backed by fiat reserves, version 2.1
  */
-contract FiatTokenV2_1 is FiatTokenV2 {
+contract DOPX__ is DOPX_ {
     /**
      * @notice Initialize v2.1
      * @param lostAndFound  The address to which the locked funds are sent
