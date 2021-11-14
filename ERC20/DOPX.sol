@@ -266,7 +266,7 @@ interface IERC20 {
     );
 }
 
-// File: contracts/v1/AbstractFiatTokenV1.sol
+// File: contracts/v1/AbstractDOPX.sol
 
 /**
  * Copyright (c) 2018-2020 CENTRE SECZ
@@ -292,7 +292,7 @@ interface IERC20 {
 
 pragma solidity 0.6.12;
 
-abstract contract AbstractFiatTokenV1 is IERC20 {
+abstract contract AbstractDOPX is IERC20 {
     function _approve(
         address owner,
         address spender,
@@ -617,7 +617,7 @@ pragma solidity 0.6.12;
  * @title DOPX
  * @dev ERC20 Token backed by fiat reserves
  */
-contract DOPX1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
+contract DOPX1 is AbstractDOPX, Ownable, Pausable, Blacklistable {
     using SafeMath for uint256;
 
     string public name;
@@ -1403,7 +1403,7 @@ contract DOPX is DOPX1, Rescuable {
 
 pragma solidity 0.6.12;
 
-abstract contract AbstractFiatTokenV2 is AbstractFiatTokenV1 {
+abstract contract AbstractFiatTokenV2 is AbstractDOPX {
     function _increaseAllowance(
         address owner,
         address spender,
